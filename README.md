@@ -1,13 +1,14 @@
 # WebUI QuickAsk
 
-WebUI QuickAsk 是 Chrome Manifest V3 extension。在 popup 輸入問題後，它會開啟新的 Open WebUI 分頁，填入問題並自動送出。
+WebUI QuickAsk is a Chrome Manifest V3 extension. Enter a question in its popup, and it opens a new Open WebUI tab, fills in the question, and sends it.
 
-它不呼叫 Open WebUI API、不需要 API key，也不修改伺服器。
+It does not call the Open WebUI API, require an API key, or modify the server. The popup and its messages are in Traditional Chinese.
 
-## 檔案結構
+## File structure
 
 ```text
 webui-quickask/
+├── .gitignore
 ├── manifest.json
 ├── README.md
 ├── icons/
@@ -25,65 +26,65 @@ webui-quickask/
     └── url.js
 ```
 
-## 安裝
+## Installation
 
-1. 在 Chrome 網址列開啟 `chrome://extensions`。
-2. 開啟右上角的 **Developer mode**。
-3. 按 **Load unpacked**。
-4. 選擇含有 `manifest.json` 的 `webui-quickask` 資料夾。
-5. 將 WebUI QuickAsk 釘選到工具列（可選）。
+1. Open `chrome://extensions` in Chrome.
+2. Turn on **Developer mode** in the top-right corner.
+3. Click **Load unpacked**.
+4. Select the `webui-quickask` folder that contains `manifest.json`.
+5. Optionally, pin WebUI QuickAsk to the toolbar.
 
-需要 Chrome 116 或更新版本。
+Requires Chrome 116 or later.
 
-## 使用方式
+## Usage
 
-1. 先在 Chrome 登入 Open WebUI，並確認已設定預設模型。
-2. 點擊 extension 圖示。
-3. 輸入 Open WebUI 網址，例如 `https://chat.example.com`。
-4. 輸入問題，按 **Enter** 或 **Submit**。按 **Shift+Enter** 可換行。
-5. 第一次使用某個網站時，請在 Chrome 對話框允許存取。
+1. Sign in to Open WebUI in Chrome and make sure a default model is configured.
+2. Click the extension icon.
+3. Enter your Open WebUI URL, such as `https://chat.example.com`.
+4. Enter a question and press **Enter** or click **Submit**. Press **Shift+Enter** for a new line.
+5. The first time you use a site, allow access in Chrome's permission dialog.
 
-送出成功後，extension 會切換到新分頁並關閉 popup。失敗時，popup 會顯示原因並保留問題。若 popup 已關閉，工具列圖示會顯示紅色數字，重新開啟即可看到問題。
+After a successful send, the extension switches to the new tab and closes the popup. If something fails, the popup shows the reason and keeps your question. If the popup has already closed, the toolbar icon shows a red count. Reopen the popup to see the question.
 
-## 權限與隱私
+## Permissions and privacy
 
-| 權限 | 用途 |
+| Permission | Purpose |
 | --- | --- |
-| `scripting` | 在你指定的 WebUI 分頁填入並送出問題 |
-| `storage` | 只儲存正規化後的 WebUI 網址 |
-| optional host permission | 只在使用時請求你輸入的單一網站（含連接埠） |
+| `scripting` | Fill in and send the question in the WebUI tab you specified |
+| `storage` | Store only the normalized WebUI URL |
+| Optional host permission | Request access, when needed, to the single site you entered, including its port |
 
-- 問題只保留在 service worker 記憶體，不寫入 `chrome.storage`。
-- 失敗的問題最多保留 10 分鐘，供你重試。
-- Extension 不讀取或儲存登入憑證。
-- 沒有遠端程式碼、第三方依賴或追蹤。
-- 問題送出後，會依 Open WebUI 的設定保存在該伺服器的對話紀錄。
+- Questions stay in service worker memory and are never written to `chrome.storage`.
+- Failed questions are kept for up to 10 minutes so you can retry.
+- The extension does not read or store login credentials.
+- There is no remote code, third-party dependency, or tracking.
+- Once sent, a question is saved in the server's chat history according to your Open WebUI settings.
 
-可在 `chrome://extensions` 的 extension 詳細資料中撤銷網站權限。
+You can revoke site access from the extension's details page in `chrome://extensions`.
 
-## 已知限制
+## Known limitations
 
-- 整合依賴 Open WebUI 的 `#chat-input` 與 `#send-message-button`。已用 Open WebUI 0.13.4 測試，若未來版本改變，extension 會停止並顯示錯誤。
-- 網址會正規化為 origin，因此不支援部署在子路徑的 Open WebUI。
-- 必須已有可用的預設模型。未選模型時，Open WebUI 會拒絕送出，popup 會顯示其訊息。
-- 富文字輸入框可能將連續空行合併成一個段落分隔。
-- 若 Open WebUI 將長文字貼上轉為附件，extension 會視為填入失敗並停止。
-- SSO 導向其他網域時，extension 會停止。請先登入後重試。
-- 瀏覽器重新啟動、extension 重新載入，或失敗超過 10 分鐘後，保留的問題會消失。
-- 同時有多個失敗請求時，popup 一次顯示一筆，清除後顯示下一筆。
-- 若權限對話框使 popup 關閉，之後按「拒絕」時，錯誤最多會在 2 分鐘後才以紅色數字顯示。
+- The integration depends on Open WebUI's `#chat-input` and `#send-message-button`. It was tested with Open WebUI 0.13.4. If a future version changes them, the extension stops and shows an error.
+- URLs are normalized to their origin, so Open WebUI deployments under a subpath are not supported.
+- A usable default model is required. If no model is selected, Open WebUI rejects the send and the popup shows its message.
+- The rich text input may collapse consecutive blank lines into a single paragraph break.
+- If Open WebUI converts long pasted text into an attachment, the extension treats it as a failed fill and stops.
+- The extension stops if SSO redirects to another domain. Sign in first, then retry.
+- Kept questions are lost when the browser restarts, when the extension reloads, or 10 minutes after the failure.
+- When several requests fail, the popup shows one at a time and moves to the next after you clear it.
+- If the permission dialog closes the popup and you then deny access, the red count can take up to 2 minutes to appear.
 
-## 手動測試
+## Manual testing
 
-1. 載入 extension，確認 popup 的 Submit 在網址或問題為空時停用。
-2. 輸入 `javascript:alert(1)`，確認顯示協定錯誤且無法送出。
-3. 輸入 WebUI 網址與問題並按 Enter，確認出現權限對話框。
-4. 按「拒絕」，確認沒有開啟分頁，問題仍保留。
-5. 再次送出並允許，確認新分頁收到問題並只送出一次。
-6. 重新開啟 popup，確認網址仍在。
-7. 用 Shift+Enter 輸入多行問題，確認換行正確。
-8. 用中文輸入法組字時按 Enter，確認只選字、不送出。
-9. 快速開啟 popup 送出兩個不同問題，確認各分頁只收到自己的問題。
-10. 登出 Open WebUI 後送出，確認顯示需要登入並保留問題。
-11. 輸入無法連線的網址，確認顯示載入失敗。
-12. 處理中關閉目標分頁，確認顯示分頁已關閉。
+1. Load the extension and confirm that Submit is disabled when the URL or question is empty.
+2. Enter `javascript:alert(1)` and confirm that a protocol error appears and the question cannot be submitted.
+3. Enter a WebUI URL and a question, press Enter, and confirm that the permission dialog appears.
+4. Click **Deny** and confirm that no tab opens and the question is kept.
+5. Submit again, allow access, and confirm that the new tab receives the question and sends it exactly once.
+6. Reopen the popup and confirm that the URL is still there.
+7. Enter a multi-line question with Shift+Enter and confirm that the line breaks are correct.
+8. Press Enter during Chinese IME composition and confirm that it selects the candidate without submitting.
+9. Quickly submit two different questions from the popup and confirm that each tab receives only its own question.
+10. Sign out of Open WebUI, submit a question, and confirm that a sign-in error appears and the question is kept.
+11. Enter an unreachable URL and confirm that a load failure appears.
+12. Close the target tab during processing and confirm that a closed-tab error appears.

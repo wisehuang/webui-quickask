@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>WebUI QuickAsk</title>
@@ -9,7 +9,7 @@
     <form id="form" novalidate>
       <h1>WebUI QuickAsk</h1>
 
-      <label for="url">Open WebUI 網址</label>
+      <label for="url">Open WebUI URL</label>
       <input
         id="url"
         type="text"
@@ -19,17 +19,17 @@
         placeholder="https://chat.example.com"
       />
 
-      <label for="question">問題</label>
-      <textarea id="question" rows="5" placeholder="輸入問題…" autofocus></textarea>
+      <label for="question">Question</label>
+      <textarea id="question" rows="5" placeholder="Enter your question..." autofocus></textarea>
 
       <p id="status" role="status" aria-live="polite"></p>
 
       <div class="actions">
-        <button id="open-tab" type="button" class="secondary" hidden>前往分頁</button>
-        <button id="dismiss" type="button" class="secondary" hidden>清除</button>
+        <button id="open-tab" type="button" class="secondary" hidden>Go to tab</button>
+        <button id="dismiss" type="button" class="secondary" hidden>Clear</button>
         <button id="submit" type="submit" disabled>Submit</button>
       </div>
-      <p class="hint">Enter 送出 · Shift+Enter 換行</p>
+      <p class="hint">Enter to send · Shift+Enter for new line</p>
     </form>
     <script type="module" src="popup.js"></script>
   </body>

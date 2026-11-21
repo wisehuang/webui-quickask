@@ -31,20 +31,20 @@ const HOST_AND_PORT = /^[^/:?#]+:\d+(?:[/?#]|$)/;
  */
 export function normalizeWebUiUrl(rawInput) {
   const input = String(rawInput ?? "").trim();
-  if (!input) return { ok: false, error: "請輸入 Open WebUI 網址。" };
+  if (!input) return { ok: false, error: "Enter your Open WebUI URL." };
   if (/[\s\u0000-\u001f\u007f\\]/.test(input)) {
-    return { ok: false, error: "網址包含無效字元。" };
+    return { ok: false, error: "The URL contains invalid characters." };
   }
 
   const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(input)?.[1]?.toLowerCase();
   if (scheme && BLOCKED_SCHEMES.has(scheme)) {
-    return { ok: false, error: "只允許 http 或 https 網址。" };
+    return { ok: false, error: "Only http and https URLs are allowed." };
   }
 
   let candidate = input;
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(input)) {
     if (scheme && !HOST_AND_PORT.test(input)) {
-      return { ok: false, error: "只允許 http 或 https 網址。" };
+      return { ok: false, error: "Only http and https URLs are allowed." };
     }
     const authority = input.replace(/^\/\//, "");
     candidate = `${LOCAL_HOST.test(authority) ? "http" : "https"}://${authority}`;
@@ -54,19 +54,19 @@ export function normalizeWebUiUrl(rawInput) {
   try {
     parsed = new URL(candidate);
   } catch {
-    return { ok: false, error: "網址格式不正確。" };
+    return { ok: false, error: "The URL format is invalid." };
   }
 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    return { ok: false, error: "只允許 http 或 https 網址。" };
+    return { ok: false, error: "Only http and https URLs are allowed." };
   }
   if (parsed.username || parsed.password) {
-    return { ok: false, error: "網址不可包含帳號或密碼。" };
+    return { ok: false, error: "The URL must not include a username or password." };
   }
-  if (!parsed.hostname) return { ok: false, error: "網址缺少主機名稱。" };
+  if (!parsed.hostname) return { ok: false, error: "The URL is missing a hostname." };
   // "*" is valid in a WHATWG hostname but would widen the Chrome match pattern.
   if (parsed.hostname.includes("*") || parsed.hostname.endsWith(".")) {
-    return { ok: false, error: "網址主機名稱不正確，不可使用萬用字元。" };
+    return { ok: false, error: "The URL hostname is invalid. Wildcards are not allowed." };
   }
 
   return {

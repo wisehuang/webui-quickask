@@ -9,10 +9,10 @@ const openTabButton = document.getElementById("open-tab");
 const dismissButton = document.getElementById("dismiss");
 
 const PROGRESS_TEXT = {
-  awaiting_permission: "等待網站存取權限…",
-  opening: "正在開啟 Open WebUI…",
-  loading: "正在載入頁面…",
-  sending: "正在填入並送出問題…",
+  awaiting_permission: "Waiting for site access...",
+  opening: "Opening Open WebUI...",
+  loading: "Loading page...",
+  sending: "Filling in and sending your question...",
 };
 
 const port = chrome.runtime.connect({ name: "popup" });
@@ -32,7 +32,7 @@ function validate() {
   const hasQuestion = questionInput.value.trim().length > 0;
   let message = "";
   if (!url.ok) message = url.error;
-  else if (!hasQuestion) message = "請輸入問題。";
+  else if (!hasQuestion) message = "Enter a question.";
 
   urlInput.setAttribute(
     "aria-invalid",
@@ -48,7 +48,7 @@ function refresh() {
   const badUrl = !url.ok && urlInput.value.trim().length > 0;
   if (failedJob && !badUrl) return;
   if (!badUrl && inFlight > 0) {
-    setStatus(`另有 ${inFlight} 個請求處理中，請勿重複送出。`);
+    setStatus(`${inFlight} request(s) still in progress. Avoid sending the same question again.`);
     return;
   }
   const field = url.ok ? questionInput : urlInput;
@@ -68,7 +68,7 @@ function showFailure(job) {
   setBusy(false);
   if (job.question && !questionInput.value) questionInput.value = job.question;
   if (job.url) urlInput.value = job.url;
-  setStatus(job.detail ? `${job.error}（${job.detail}）` : job.error, "error");
+  setStatus(job.detail ? `${job.error} (${job.detail})` : job.error, "error");
   openTabButton.hidden = !job.hasTab;
   dismissButton.hidden = false;
   validate();
@@ -91,10 +91,10 @@ function handleJob(job) {
   if (job.state === "failed") {
     showFailure(job);
   } else if (job.state === "succeeded") {
-    setStatus("已送出。", "ok");
+    setStatus("Sent.", "ok");
     setTimeout(() => window.close(), 300);
   } else {
-    setStatus(PROGRESS_TEXT[job.state] ?? "處理中…");
+    setStatus(PROGRESS_TEXT[job.state] ?? "Working...");
   }
 }
 
@@ -110,7 +110,7 @@ port.onMessage.addListener((message) => {
 port.onDisconnect.addListener(() => {
   if (!busy) return;
   setBusy(false);
-  setStatus("背景服務已中斷，無法確認是否送出。重試前請先檢查分頁。", "error");
+  setStatus("The background service disconnected, so the send could not be confirmed. Check the tab before retrying.", "error");
 });
 
 function submit() {

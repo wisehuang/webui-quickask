@@ -2,7 +2,7 @@
 
 WebUI QuickAsk is a Chrome Manifest V3 extension. Enter a question in its popup, and it opens a new Open WebUI tab, fills in the question, and sends it.
 
-It does not call the Open WebUI API, require an API key, or modify the server. The popup and its messages are in Traditional Chinese.
+It does not call the Open WebUI API, require an API key, or modify the server.
 
 ## File structure
 
